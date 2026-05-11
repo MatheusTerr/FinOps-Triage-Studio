@@ -1,18 +1,18 @@
 # FinOps Triage Studio
 
-Aplicacao web local para simular a triagem de chamados em operacoes financeiras. O projeto combina backend Python, SQLite, classificacao com scikit-learn, recuperacao de runbooks com LangChain e analise generativa opcional via OpenAI.
+Aplicação web local para simular a triagem de chamados em operações financeiras. O projeto combina backend Python, SQLite, classificação com scikit-learn, recuperação de runbooks com LangChain e análise generativa opcional via OpenAI.
 
-> Os dados do projeto sao sinteticos e existem apenas para demonstracao tecnica.
+> Os dados do projeto são sintéticos e existem apenas para demonstração técnica.
 
 ## Destaques
 
-- Dashboard operacional com volume, SLA, reabertura, autosservico e distribuicao por fila.
-- Classificador supervisionado para sugerir a fila responsavel por cada chamado.
+- Dashboard operacional com volume, SLA, reabertura, autosserviço e distribuição por fila.
+- Classificador supervisionado para sugerir a fila responsável por cada chamado.
 - Base de conhecimento em JSON com runbooks operacionais simulados.
 - RAG com LangChain usando `TFIDFRetriever` para recuperar procedimentos relevantes.
-- Integracao opcional com OpenAI para gerar resumo, prioridade, proximos passos e resposta sugerida.
-- Fallback local por regras quando `OPENAI_API_KEY` nao esta configurada.
-- API HTTP simples servida por Python, sem dependencia de framework web externo.
+- Integração opcional com OpenAI para gerar resumo, prioridade, próximos passos e resposta sugerida.
+- Fallback local por regras quando `OPENAI_API_KEY` não está configurada.
+- API HTTP simples servida por Python, sem dependência de framework web externo.
 
 ## Fluxo
 
@@ -25,9 +25,9 @@ Modelo scikit-learn sugere a fila operacional
         |
 LangChain recupera runbooks relacionados ao caso
         |
-OpenAI, quando configurada, gera uma analise estruturada
+OpenAI, quando configurada, gera uma análise estruturada
         |
-Resultado e salvo no SQLite e exibido no dashboard
+Resultado é salvo no SQLite e exibido no dashboard
 ```
 
 ## Stack
@@ -42,7 +42,7 @@ Resultado e salvo no SQLite e exibido no dashboard
 
 ## Como rodar localmente
 
-Clone o repositorio e entre na pasta do projeto:
+Clone o repositório e entre na pasta do projeto:
 
 ```powershell
 git clone <url-do-repositorio>
@@ -56,7 +56,7 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-Instale as dependencias:
+Instale as dependências:
 
 ```powershell
 python -m pip install -r requirements.txt
@@ -78,7 +78,7 @@ OPENAI_MODEL=gpt-4.1-mini
 
 O arquivo `.env` fica fora do Git. Sem a chave, o app continua funcionando em modo local.
 
-Inicie a aplicacao:
+Inicie a aplicação:
 
 ```powershell
 python app.py
@@ -98,23 +98,23 @@ python app.py --reset
 
 ## API
 
-| Metodo | Rota | Descricao |
+| Método | Rota | Descrição |
 | --- | --- | --- |
-| `GET` | `/api/health` | Retorna status da aplicacao e da integracao OpenAI. |
+| `GET` | `/api/health` | Retorna status da aplicação e da integração OpenAI. |
 | `GET` | `/api/metrics` | Retorna indicadores do dashboard. |
 | `GET` | `/api/tickets` | Lista chamados salvos no SQLite. |
 | `POST` | `/api/analyze` | Analisa um novo chamado e salva o resultado. |
 | `POST` | `/api/retrain` | Retreina o classificador com os dados atuais. |
 
-Exemplo de chamada para analise:
+Exemplo de chamada para análise:
 
 ```json
 {
   "channel": "App",
   "segment": "Varejo",
-  "product": "Cartao",
-  "request_type": "Transacao nao reconhecida",
-  "description": "Cliente informa que nao reconhece uma compra no cartao e pede analise urgente.",
+  "product": "Cartão",
+  "request_type": "Transação não reconhecida",
+  "description": "Cliente informa que não reconhece uma compra no cartão e pede análise urgente.",
   "value": 780,
   "sentiment": "Negativo",
   "reopened": false,
@@ -151,31 +151,31 @@ Exemplo de chamada para analise:
 
 ## Modelo e RAG
 
-O classificador usa `TfidfVectorizer` e `LogisticRegression` para sugerir uma fila operacional. O treino acontece com chamados sinteticos gerados em `sample_data.py`, e as metricas sao salvas em `runtime/model_metrics.json`.
+O classificador usa `TfidfVectorizer` e `LogisticRegression` para sugerir uma fila operacional. O treino acontece com chamados sintéticos gerados em `sample_data.py`, e as métricas são salvas em `runtime/model_metrics.json`.
 
-A etapa de RAG transforma os runbooks de `knowledge/runbooks.json` em documentos LangChain. O `TFIDFRetriever` compara o texto do chamado com esses documentos e envia os runbooks mais relevantes para a etapa de analise.
+A etapa de RAG transforma os runbooks de `knowledge/runbooks.json` em documentos LangChain. O `TFIDFRetriever` compara o texto do chamado com esses documentos e envia os runbooks mais relevantes para a etapa de análise.
 
-Quando `OPENAI_API_KEY` esta configurada, `openai_client.py` usa `ChatOpenAI` com saida estruturada por Pydantic. Quando a chave nao existe, a aplicacao usa uma resposta local baseada nos runbooks recuperados.
+Quando `OPENAI_API_KEY` está configurada, `openai_client.py` usa `ChatOpenAI` com saída estruturada por Pydantic. Quando a chave não existe, a aplicação usa uma resposta local baseada nos runbooks recuperados.
 
-## Dados e seguranca
+## Dados e segurança
 
-- O projeto nao usa dados reais de clientes.
+- O projeto não usa dados reais de clientes.
 - O banco local e os artefatos de runtime ficam em `runtime/`, pasta ignorada pelo Git.
-- A chave da OpenAI deve ficar em `.env`, tambem ignorado pelo Git.
-- A resposta do sistema e uma recomendacao operacional; decisoes sensiveis devem passar por revisao humana.
+- A chave da OpenAI deve ficar em `.env`, também ignorado pelo Git.
+- A resposta do sistema é uma recomendação operacional; decisões sensíveis devem passar por revisão humana.
 
 ## Limites
 
-- A base de treino e sintetica.
-- Nao ha autenticacao ou controle de permissao.
-- Nao ha integracao real com CRM, core bancario ou sistema de chamados.
-- Nao ha avaliacao humana persistida para medir qualidade das recomendacoes.
-- Nao ha monitoramento de drift do modelo.
+- A base de treino é sintética.
+- Não há autenticação ou controle de permissão.
+- Não há integração real com CRM, core bancário ou sistema de chamados.
+- Não há avaliação humana persistida para medir qualidade das recomendações.
+- Não há monitoramento de drift do modelo.
 
-## Possiveis evolucoes
+## Possíveis evoluções
 
 - Conectar a um sistema real de chamados usando dados anonimizados.
-- Adicionar avaliacao humana para comparar sugestao e decisao final.
+- Adicionar avaliação humana para comparar sugestão e decisão final.
 - Substituir o retriever TF-IDF por embeddings e banco vetorial.
-- Criar autenticacao e perfis de acesso.
+- Criar autenticação e perfis de acesso.
 - Monitorar performance do modelo ao longo do tempo.
