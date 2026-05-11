@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FinOps Triage Studio</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">FT</div>
+        <div>
+          <h1>FinOps Triage</h1>
+          <p>Operations workflow</p>
+        </div>
+      </div>
+      <nav>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#triage">Triagem</a>
+        <a href="#cases">Casos</a>
+        <a href="#model">Modelo</a>
+      </nav>
+      <div class="sidebar-note">
+        <span>Status OpenAI</span>
+        <strong id="openai-status">verificando</strong>
+      </div>
+    </aside>
+
+    <main>
+      <section class="page-head">
+        <div>
+          <p class="eyebrow">Operacoes financeiras</p>
+          <h2>Assistente para triagem de chamados</h2>
+        </div>
+        <button id="refresh-button" class="ghost-button" type="button">Atualizar</button>
+      </section>
+
+      <section id="dashboard" class="section">
+        <div class="section-title">
+          <h3>Visao da operacao</h3>
+          <p>Indicadores calculados a partir do banco local SQLite.</p>
+        </div>
+        <div class="kpi-grid" id="kpis"></div>
+        <div class="dashboard-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <h4>Volume dos ultimos dias</h4>
+              <span>tickets</span>
+            </div>
+            <canvas id="volume-chart" width="760" height="300"></canvas>
+          </article>
+          <article class="panel">
+            <div class="panel-head">
+              <h4>Filas com maior demanda</h4>
+              <span>distribuicao</span>
+            </div>
+            <div id="queue-bars" class="bar-list"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head">
+              <h4>Prazo violado por canal</h4>
+              <span>% de casos</span>
+            </div>
+            <div id="channel-bars" class="bar-list compact"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head">
+              <h4>Qualidade do classificador</h4>
+              <span>teste local</span>
+            </div>
+            <div class="model-score">
+              <div>
+                <span>Acuracia</span>
+                <strong id="accuracy">-</strong>
+              </div>
+              <div>
+                <span>F1 macro</span>
+                <strong id="f1">-</strong>
+              </div>
+            </div>
+            <p class="small-copy">As metricas validam o pipeline em dados simulados. Em producao, a validacao precisa usar historico anonimizado.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="triage" class="section">
+        <div class="section-title">
+          <h3>Analisar novo chamado</h3>
+          <p>Digite um caso e rode a triagem com modelo, runbooks e analise estruturada.</p>
+        </div>
+        <div class="triage-layout">
+          <form id="triage-form" class="panel form-panel">
+            <div class="quick-row">
+              <button type="button" class="preset-button" data-preset="fraude">Fraude</button>
+              <button type="button" class="preset-button" data-preset="digital">Acesso digital</button>
+              <button type="button" class="preset-button" data-preset="credito">Renegociacao</button>
+            </div>
+            <div class="form-grid">
+              <label>
+                Canal
+                <select name="channel">
+                  <option>App</option>
+                  <option>Internet Banking</option>
+                  <option>WhatsApp</option>
+                  <option>Central</option>
+                  <option>Agencia</option>
+                </select>
+              </label>
+              <label>
+                Segmento
+                <select name="segment">
+                  <option>Varejo</option>
+                  <option>Prime</option>
+                  <option>Alta Renda</option>
+                  <option>Empresas</option>
+                </select>
+              </label>
+              <label>
+                Produto
+                <select name="product">
+                  <option>Cartao</option>
+                  <option>Pix</option>
+                  <option>Conta Corrente</option>
+                  <option>App</option>
+                  <option>Internet Banking</option>
+                  <option>Credito Pessoal</option>
+                  <option>Financiamento</option>
+                  <option>Seguro</option>
+                </select>
+              </label>
+              <label>
+                Tipo
+                <select name="request_type">
+                  <option>Transacao nao reconhecida</option>
+                  <option>Contestacao de compra</option>
+                  <option>Segunda via ou comprovante</option>
+                  <option>Atualizacao cadastral</option>
+                  <option>Acesso ao canal digital</option>
+                  <option>Renegociacao</option>
+                  <option>Revisao de limite</option>
+                  <option>Cancelamento</option>
+                  <option>Portabilidade ou ajuste operacional</option>
+                </select>
+              </label>
+              <label>
+                Valor aproximado
+                <input name="value" type="number" min="0" step="0.01" value="780">
+              </label>
+              <label>
+                Sentimento
+                <select name="sentiment">
+                  <option>Neutro</option>
+                  <option>Negativo</option>
+                  <option>Positivo</option>
+                </select>
+              </label>
+            </div>
+            <label>
+              Descricao do chamado
+              <textarea name="description" rows="6">Cliente informa que nao reconhece uma compra no cartao e pede analise urgente. Diz que ja tentou resolver pelo app e esta preocupado com o valor.</textarea>
+            </label>
+            <div class="switch-row">
+              <label class="switch">
+                <input name="reopened" type="checkbox">
+                <span>Reabertura</span>
+              </label>
+              <label class="switch">
+                <input name="auto_service_candidate" type="checkbox">
+                <span>Possivel autosservico</span>
+              </label>
+            </div>
+            <button id="analyze-button" class="primary-button" type="submit">Analisar chamado</button>
+          </form>
+
+          <article class="panel result-panel">
+            <div class="empty-state" id="empty-result">
+              <h4>Nenhuma analise ainda</h4>
+              <p>Preencha o chamado e execute a triagem para ver a recomendacao.</p>
+            </div>
+            <div id="analysis-result" class="hidden">
+              <div class="result-head">
+                <div>
+                  <span id="result-ticket">-</span>
+                  <h4 id="result-queue">-</h4>
+                </div>
+                <strong id="result-priority" class="priority-pill">-</strong>
+              </div>
+              <div class="confidence-row">
+                <span>Confianca do modelo</span>
+                <div class="meter"><div id="confidence-fill"></div></div>
+                <strong id="confidence-text">-</strong>
+              </div>
+              <div class="memo-block">
+                <span>Resumo</span>
+                <p id="memo-summary"></p>
+              </div>
+              <div class="two-columns">
+                <div>
+                  <h5>Racional</h5>
+                  <ul id="memo-reasons"></ul>
+                </div>
+                <div>
+                  <h5>Acoes</h5>
+                  <ul id="memo-actions"></ul>
+                </div>
+              </div>
+              <div class="memo-block">
+                <span>Resposta sugerida ao cliente</span>
+                <p id="customer-response"></p>
+              </div>
+              <div>
+                <h5>Runbooks usados</h5>
+                <div id="runbook-list" class="chip-list"></div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="cases" class="section">
+        <div class="section-title">
+          <h3>Casos recentes</h3>
+          <p>Chamados simulados e analises salvas pelo app.</p>
+        </div>
+        <article class="panel table-panel">
+          <table>
+            <thead>
+              <tr>
+                <th>Ticket</th>
+                <th>Tipo</th>
+                <th>Produto</th>
+                <th>Fila</th>
+                <th>Prioridade</th>
+                <th>Confianca</th>
+              </tr>
+            </thead>
+            <tbody id="recent-table"></tbody>
+          </table>
+        </article>
+      </section>
+
+      <section id="model" class="section">
+        <div class="section-title">
+          <h3>Modelo e interpretabilidade</h3>
+          <p>Termos que mais influenciam cada fila operacional.</p>
+        </div>
+        <article class="panel">
+          <div id="top-terms" class="terms-grid"></div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

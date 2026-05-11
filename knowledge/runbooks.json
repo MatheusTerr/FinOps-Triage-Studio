@@ -1,0 +1,108 @@
+[
+  {
+    "id": "fraude_contestacao",
+    "queue": "Contestacao e Fraude",
+    "title": "Contestacao, fraude e transacao nao reconhecida",
+    "summary": "Casos de transacao nao reconhecida, suspeita de fraude, contestacao de compra ou Pix sensivel exigem prioridade e rastreabilidade. O analista deve coletar evidencias minimas e evitar encerramento automatico.",
+    "actions": [
+      "Registrar produto, canal, valor estimado e horario aproximado do evento.",
+      "Validar se existe reabertura, recorrencia ou impacto financeiro relevante.",
+      "Encaminhar para analista especializado quando houver fraude, alto valor ou transacao nao reconhecida."
+    ],
+    "controls": [
+      "Nao prometer estorno antes da analise autorizada.",
+      "Manter humano no loop para fraude, alto valor e insatisfacao alta."
+    ]
+  },
+  {
+    "id": "documentos_comprovantes",
+    "queue": "Segunda Via e Comprovantes",
+    "title": "Segunda via, comprovantes e documentos simples",
+    "summary": "Solicitacoes padronizadas de segunda via, comprovantes e documentos podem ser direcionadas para jornada digital quando nao houver divergencia, bloqueio ou reabertura.",
+    "actions": [
+      "Verificar se o cliente esta apto para autosservico.",
+      "Orientar a jornada digital correspondente ao documento solicitado.",
+      "Registrar motivo quando o cliente nao conseguir concluir pelo canal digital."
+    ],
+    "controls": [
+      "Nao solicitar dados sensiveis fora do canal oficial.",
+      "Manter alternativa humana quando o autosservico falhar."
+    ]
+  },
+  {
+    "id": "cadastro_documentos",
+    "queue": "Cadastro e Documentos",
+    "title": "Atualizacao cadastral e pendencias documentais",
+    "summary": "Demandas cadastrais exigem conferencia de informacoes declaradas e documentos pendentes. Divergencias precisam ser registradas para evitar reabertura.",
+    "actions": [
+      "Conferir se existe documento pendente ou divergencia cadastral.",
+      "Orientar envio pelo canal oficial quando disponivel.",
+      "Registrar a causa da pendencia antes de concluir o atendimento."
+    ],
+    "controls": [
+      "Nao expor dados pessoais desnecessarios na resposta.",
+      "Validar identidade antes de tratar informacao cadastral."
+    ]
+  },
+  {
+    "id": "canais_digitais",
+    "queue": "Canais Digitais",
+    "title": "Acesso, senha, token e instabilidade digital",
+    "summary": "Problemas de acesso ao app, internet banking, senha ou token devem ser triados por etapa da jornada, mensagem de erro e recorrencia. Falhas concentradas podem indicar incidente operacional.",
+    "actions": [
+      "Coletar canal, etapa da jornada e mensagem de erro.",
+      "Verificar se ha concentracao de chamados semelhantes.",
+      "Direcionar para suporte digital quando houver falha tecnica."
+    ],
+    "controls": [
+      "Nao pedir senha, token ou codigo completo ao cliente.",
+      "Priorizar reabertura quando o cliente ja tentou resolver pelo canal digital."
+    ]
+  },
+  {
+    "id": "credito_renegociacao",
+    "queue": "Credito e Renegociacao",
+    "title": "Credito, renegociacao, acordo e limite",
+    "summary": "Pedidos de renegociacao, acordo, limite ou condicao financeira devem ser organizados sem prometer aprovacao. A decisao depende de politica autorizada.",
+    "actions": [
+      "Identificar produto, objetivo do cliente e valor aproximado.",
+      "Encaminhar para esteira autorizada quando houver pedido de condicao financeira.",
+      "Registrar expectativa do cliente sem prometer aprovacao, desconto ou limite."
+    ],
+    "controls": [
+      "Nao prometer credito, desconto, renegociacao ou aumento de limite.",
+      "Manter decisao financeira fora da automacao."
+    ]
+  },
+  {
+    "id": "retencao_cancelamento",
+    "queue": "Retencao e Cancelamento",
+    "title": "Cancelamento, retencao e encerramento",
+    "summary": "Solicitacoes de cancelamento devem respeitar a vontade do cliente, confirmar produto e registrar causa raiz. Em insatisfacao alta, evitar ofertas inadequadas.",
+    "actions": [
+      "Confirmar produto e motivo do cancelamento.",
+      "Registrar causa raiz para analise de melhoria.",
+      "Evitar oferta inadequada quando houver insatisfacao alta."
+    ],
+    "controls": [
+      "Nao criar atrito para impedir cancelamento.",
+      "Registrar consentimento e canal de origem."
+    ]
+  },
+  {
+    "id": "operacoes_conta",
+    "queue": "Operacoes de Conta",
+    "title": "Portabilidade e ajustes operacionais de conta",
+    "summary": "Demandas de portabilidade e ajustes operacionais devem ser tratadas com conferencia de produto, canal e dependencia operacional.",
+    "actions": [
+      "Identificar o tipo de alteracao operacional solicitada.",
+      "Verificar se existe dependencia de documento, canal ou prazo.",
+      "Registrar status da tratativa para evitar novo contato pelo mesmo motivo."
+    ],
+    "controls": [
+      "Nao confirmar conclusao antes da validacao operacional.",
+      "Comunicar proximos passos de forma objetiva."
+    ]
+  }
+]
+
